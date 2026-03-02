@@ -27,11 +27,6 @@ Exemples de variables explicatives :
 - Historique de paiement : `PAY_0`, `PAY_2`, `PAY_3`, `PAY_4`, `PAY_5`, `PAY_6`
 - Montants : `BILL_AMT1` à `BILL_AMT6`, `PAY_AMT1` à `PAY_AMT6`
 
-## Environnement recommandé
-
-- Python 3.10+
-- Jupyter Notebook / JupyterLab
-
 Bibliothèques utilisées dans les notebooks :
 - `pandas`, `numpy`
 - `matplotlib`, `seaborn`, `missingno`
@@ -57,12 +52,6 @@ Lancer Jupyter :
 ```bash
 jupyter notebook
 ```
-
-Exécuter les notebooks dans l’ordre :
-
-1. `1_Construire_Un_Score.ipynb`
-2. `2_Feature_Engineering_Selction_Variables.ipynb`
-3. `3_Regression_Logistique.ipynb`
 
 ## Zoom sur la Partie 2 (Feature Engineering & Sélection de Variables)
 
