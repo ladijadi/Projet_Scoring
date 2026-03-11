@@ -1,137 +1,248 @@
-# Projet Scoring Crédit (Default Payment)
+# Credit Risk Scoring - Default Prediction
 
-Ce projet vise à construire un **score d’octroi de crédit** pour estimer la probabilité de défaut de paiement le mois suivant.
-Il s’appuie sur le dataset **Default of Credit Card Clients (Taiwan, 2005)** et suit une démarche complète : exploration, feature engineering, sélection de variables et modélisation par régression logistique.
+This project builds a **credit scoring model** to estimate the probability of default (PD) for credit card clients.
 
-## Objectifs
+The analysis is based on the **Default of Credit Card Clients dataset (Taiwan, 2005)** and follows a complete risk modeling workflow:
 
-- Comprendre le profil des clients à risque
-- Identifier les variables explicatives du défaut de paiement
-- Construire un modèle prédictif interprétable.
-- Produire un score exploitable pour la décision d’octroi.
+- Exploratory Data Analysis
+- Feature Engineering
+- Statistical Analysis
+- Feature Selection
+- Logistic Regression Modeling
+- Model Evaluation and Interpretation
 
-## Structure du projet
+The objective is to develop an **interpretable predictive model** that can support **credit decision processes**.
 
-- `1_Construire_Un_Score.ipynb` : cadrage, compréhension des données, exploration initiale
-- `2_Feature_Engineering_Selction_Variables.ipynb` : préparation des données, regroupements de modalités, analyse de corrélation et sélection des variables
-- `3_Regression_Logistique.ipynb` : encodage, split train/test, entraînement et évaluation du modèle logistique
-- `UCI_Credit_Card.csv` : données source
+---
 
-## Données
+# Project Objectives
 
-Variable cible :
-- `default.payment.next.month` (1 = défaut, 0 = non défaut)
+- Understand the profile of clients with a higher risk of default
+- Identify the most relevant variables explaining default behavior
+- Build an interpretable **credit scoring model**
+- Estimate the **probability of default (PD)** for each client
+- Evaluate model performance using standard **credit risk metrics**
 
-Exemples de variables explicatives :
-- Démographie : `SEX`, `EDUCATION`, `MARRIAGE`, `AGE`
-- Historique de paiement : `PAY_0`, `PAY_2`, `PAY_3`, `PAY_4`, `PAY_5`, `PAY_6`
-- Montants : `BILL_AMT1` à `BILL_AMT6`, `PAY_AMT1` à `PAY_AMT6`
+---
 
-Bibliothèques utilisées dans les notebooks :
-- `pandas`, `numpy`
-- `matplotlib`, `seaborn`, `missingno`
-- `scikit-learn`, `statsmodels`, `scipy`
+# Dataset
 
-## Installation
+The dataset used in this project is the **Default of Credit Card Clients Dataset (Taiwan, 2005)**.
 
-Depuis la racine du projet :
+It contains **30,000 observations** and **25 variables** describing client characteristics and credit behavior.
 
-```bash
-python -m venv .venv
-# Windows PowerShell
-.venv\Scripts\Activate.ps1
+Target variable:
 
-pip install -U pip
-pip install pandas numpy matplotlib seaborn missingno scikit-learn statsmodels scipy jupyter
-```
+- `1` = Default
+- `0` = No default
 
-## Exécution
+---
 
-Lancer Jupyter :
+# Main Variables
 
-```bash
-jupyter notebook
-```
+### Demographic Variables
 
-## Zoom sur la Partie 2 (Feature Engineering & Sélection de Variables)
+- `SEX`
+- `EDUCATION`
+- `MARRIAGE`
+- `AGE`
 
-Le notebook `2_Feature_Engineering_Selction_Variables.ipynb` contient une phase d’analyse approfondie, utile pour justifier les variables retenues dans le modèle final.
+### Credit Information
 
-### 1) Préparation et recodage métier
+- `LIMIT_BAL` (credit limit)
 
-- Regroupement des modalités rares de `EDUCATION` et `MARRIAGE` en `Autres`.
-- Harmonisation des statuts de paiement (`PAY_0`, `PAY_2`, ..., `PAY_6`) en classes plus lisibles (`Paiement à temps` / `Retard`).
-- Conversion des variables qualitatives au format `category`.
+### Payment History
 
-### 2) Relations entre variables quantitatives
+- `PAY_0` to `PAY_6` (repayment status over the last months)
 
-- Matrices de corrélation selon trois approches : **Pearson**, **Spearman**, **Kendall**.
-- Visualisation de toutes les paires quantitatives via des **nuages de points**.
-- Objectif : repérer dépendances, redondances potentielles et signaux utiles pour la modélisation.
+### Billing Amounts
 
-### 3) Relations entre variables qualitatives
+- `BILL_AMT1` to `BILL_AMT6`
 
-- Calcul de l’association entre variables catégorielles avec :
-	- **Test du Khi-deux** (indépendance)
-	- **V de Cramer** (force d’association)
-	- **T de Tschuprow** (variante robuste pour tableaux non carrés)
-- Visualisations associées :
-	- **Barplots croisés** pour les paires de variables
-	- **Heatmaps** des matrices V de Cramer / T de Tschuprow
+### Payment Amounts
 
-### 4) Relations Quali ↔ Quanti
+- `PAY_AMT1` to `PAY_AMT6`
 
-- Génération de **boxplots** variable quantitative vs variable qualitative.
-- Choix du test statistique selon le cas :
-	- **T-test** quand la variable qualitative a 2 modalités
-	- **Kruskal-Wallis** quand elle a plus de 2 modalités
-- Vérification de la normalité via **Shapiro**.
+---
 
-### 5) Classement des variables quantitatives
+# Project Structure
 
-- Classement par pertinence vis-à-vis de la cible `default.payment.next.month` via **p-valeurs Kruskal-Wallis**.
-- Approche complémentaire par tests pair-à-pair :
-	- **Student (t-test)**
-	- **Mann-Whitney U**
-- Restitution sous forme de tableaux triés + graphiques de classement.
+credit-risk-scoring-logistic-regression
 
-### 6) Sélection supervisée avec Random Forest
+│
 
-- Découpage des données en train/test (**stratifié**).
-- Encodage des variables via `ColumnTransformer` + `OneHotEncoder`.
-- Entraînement d’un `RandomForestClassifier` pour calculer les **feature importances**.
-- Sélection initiale des variables dont l’importance est supérieure à la moyenne.
-- Visualisation des variables les plus importantes (Top N).
+├── 1_Construire_Un_Score.ipynb
+│ Exploratory data analysis and dataset understanding
+│
 
-## Pipeline de modélisation (résumé)
+├── 2_Feature_Engineering_Selction_Variables.ipynb
+│ Feature engineering, statistical analysis and feature selection
+│
 
-1. **Chargement et contrôle qualité** : import des données, vérification des types et des valeurs manquantes.
-2. **Prétraitement métier** : regroupement de modalités rares (`EDUCATION`, `MARRIAGE`) et simplification des statuts de paiement.
-3. **Feature Engineering** : transformation des variables catégorielles, analyses de corrélation/visualisations.
-4. **Préparation modèle** : split stratifié train/test, encodage One-Hot des variables qualitatives.
-5. **Modélisation** : régression logistique (interprétable) + évaluation de la performance
+├── 3_Regression_Logistique.ipynb
+│ Logistic regression modeling and model evaluation
+│
 
-## Critères de sélection retenus dans le projet
+├── 4_Machine_Learning_comparaison.ipynb
+│ Random Forrest modeling and model evaluation
+│
 
-La sélection des variables s’appuie sur une combinaison de :
+└── UCI_Credit_Card.csv
+Dataset
 
-- Significativité statistique (Khi-deux, T-test, Mann-Whitney, Kruskal-Wallis)
-- Force d’association (V de Cramer / T de Tschuprow)
-- Importance supervisée (Random Forest)
-- Lecture métier (interprétabilité et cohérence risque crédit)
+---
 
-## Résultats attendus
+# Methodology
 
-- Estimation de la probabilité de défaut par client
-- Indicateurs de performance (accuracy, precision, recall, F1, courbe ROC/AUC)
-- Base pour construire des règles d’acceptation/refus ou un cut-off de score
+## 1. Data Understanding and Exploration
 
-## Limites et vigilance
+Initial exploration of the dataset includes:
 
-- Certaines étapes du notebook 2 sont exploratoires et peuvent être redondantes (itérations successives de tests).
-- Les résultats de sélection peuvent varier selon :
-	- le découpage train/test,
-	- les seuils de p-valeurs,
-	- les hyperparamètres du modèle de forêt aléatoire.
-- La sélection finale doit être confirmée par des performances hors échantillon et une validation métier.
+- Data structure inspection
+- Descriptive statistics
+- Distribution analysis of numerical variables
+- Frequency analysis of categorical variables
 
+Visualizations include:
+
+- Histograms
+- Boxplots
+- QQ-plots
+
+---
+
+## 2. Feature Engineering
+
+Several preprocessing steps were applied:
+
+- Grouping rare categories in `EDUCATION` and `MARRIAGE`
+- Data type conversions for categorical variables
+- Exploratory analysis of payment behavior variables
+
+This step improves model interpretability and data quality.
+
+---
+
+## 3. Statistical Analysis
+
+Different statistical techniques were used to understand relationships between variables.
+
+### Numerical Variables
+
+Correlation analysis using:
+
+- **Pearson**
+- **Spearman**
+- **Kendall**
+
+Scatterplots were used to visualize relationships between numerical variables.
+
+---
+
+### Categorical Variables
+
+Association between categorical variables was analyzed using:
+
+- **Chi-Square test**
+- **Cramér’s V**
+- **Tschuprow’s T**
+
+Heatmaps were generated to visualize the strength of associations.
+
+---
+
+### Categorical vs Numerical Variables
+
+Relationships between categorical and numerical variables were analyzed using:
+
+- **T-test** (for binary categorical variables)
+- **Kruskal-Wallis test** (for variables with more than two categories)
+
+Boxplots were used for visualization.
+
+---
+
+## 4. Feature Selection
+
+Feature selection combined multiple approaches:
+
+- Statistical significance tests
+- Association measures (Cramér’s V / Tschuprow’s T)
+- Random Forest feature importance
+- Domain interpretation (credit risk logic)
+
+Random Forest was used to identify the most relevant predictors.
+
+Key variables identified include:
+
+- Payment behavior (`PAY_0`, `PAY_2`, `PAY_3`)
+- Credit limit (`LIMIT_BAL`)
+- Billing and payment amounts
+
+---
+
+## 5. Modeling
+
+A **logistic regression model** was used to estimate the probability of default.
+
+Steps included:
+
+- Train/test split (stratified)
+- One-hot encoding of categorical variables
+- Model training using maximum likelihood estimation
+
+Logistic regression was chosen because it is widely used in **credit risk modeling due to its interpretability**.
+
+---
+
+# Model Performance
+
+The model was evaluated using several metrics commonly used in **credit scoring**.
+
+| Metric | Value |
+|------|------|
+| AUC (ROC) | ~0.71 |
+| Gini Coefficient | ~0.43 |
+| KS Statistic | ~0.37 |
+
+These results indicate a **reasonable discriminatory power**, which is consistent with typical performance levels for this dataset.
+
+---
+
+# Model Interpretation
+
+Analysis of model coefficients and feature importance reveals that:
+
+- **Payment behavior variables (`PAY_0`, `PAY_2`, `PAY_3`) are the strongest predictors of default**
+- Higher repayment amounts reduce the probability of default
+- Demographic variables have a weaker predictive effect
+
+This aligns with **credit risk modeling practices**, where **payment history is usually the most informative predictor of default risk**.
+
+---
+
+# Technologies Used
+
+- Python
+- Pandas
+- NumPy
+- Scikit-learn
+- Statsmodels
+- SciPy
+- Matplotlib
+- Seaborn
+- Jupyter Notebook
+
+---
+
+# Limitations
+
+Several limitations should be noted:
+
+Some feature engineering steps remain exploratory
+
+Results may vary depending on train/test split
+
+Hyperparameters of machine learning models may influence feature importance
+
+Real-world credit scoring models typically require additional validation and regulatory constraints
